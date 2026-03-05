@@ -30,3 +30,10 @@ class MedicaoVeiculoSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.MedicaoVeiculo
         fields = "__all__"
+        extra_kwargs = {
+            'id':{'help_text':'identificador de Medição veiculo'},
+            'veiculoid':{'help_text':'identificador do veiculo. Buscar no get da Api veiculo' },
+            'medicaoid': {'help_text': 'identificador do tipo de medição. Buscar no Get da api medição'},
+            'data': {'help_text': 'data e hora da medição realizada, essa informação deve vir da automação'},
+            'valor': {'help_text': 'valor medido na automação.'}
+        }

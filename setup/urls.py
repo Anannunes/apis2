@@ -1,8 +1,8 @@
 """
 URL configuration for setup project.
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/6.0/topics/http/urls/
+The urlpatterns list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/5.2/topics/http/urls/
 Examples:
 Function views
     1. Add an import:  from my_app import views
@@ -14,21 +14,42 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-# 2. Add a URL to urlpatterns: path('blog/', include('blog.urls'))
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework import routers
+from rest_framework import routers, permissions
 from api_telemetria.api import viewsets
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="API para telemetria de veiculos agricolas",
+        default_version='v1',
+        description="Sistema para cadastro e controle por telemetria de frota de veiculos agricolas",
+        terms_of_service="https://www.google.com/policies/terms/",
+        contact=openapi.Contact(email="contato@teste.com.br"),
+        license=openapi.License(name="OpenSource"),
+
+    ),
+    public=True,
+    permission_classes=[permissions.AllowAny],
+)
 
 route = routers.DefaultRouter()
-route.register(r'marca', viewsets.MarcaViewset, basename='Marca')
-route.register(r'veiculo', viewsets.VeiculoViewset, basename='Veiculo')
-route.register(r'modelo', viewsets.ModeloViewset, basename='Modelo')
-route.register(r'medicao_veiculo', viewsets.MedicaoVeiculoViewset, basename='MedicaoVeiculo')
-route.register(r'medicao', viewsets.MedicaoViewset, basename='Medicao')
-route.register(r'unidade_medida', viewsets.UnidadeMedidaViewset, basename='UnidadeMedida')
+route.register(r'marca', viewsets.MarcaViewset, basename="Marca")
+route.register(r'modelo', viewsets.ModeloViewset, basename="Modelo")
+route.register(r'medicao', viewsets.MedicaoViewset, basename="Medicao")
+route.register(r'medicaoveiculo', viewsets.MedicaoVeiculoViewset, basename="Medicaoveiculo")
+route.register(r'unidademedida', viewsets.UnidadeMedidaViewset, basename="UnidadeMedida")
+route.register(r'veiculo', viewsets.VeiculoViewset, basename="Veiculo")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include(route.urls)),
+    path('', include(route.urls))
+]
+ 
+urlpatterns += [
+    path('swaggerjson/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
